@@ -1,0 +1,110 @@
+﻿@model ViewImg_One
+
+
+@{
+    ViewData["Title"] = "Edit_Img";
+}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh mục</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Edit Img</h6>
+        </div>
+        <form asp-action="EditImg" enctype="multipart/form-data">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary d-inline-block">Edit</h6>
+                    <div class="float-right">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary" for="files">
+                                        Edit Img
+                                    </label>
+                                    <input class="d-none" id="files" type="file">
+                                </div>
+                                <input asp-for="Path" type="text" class="d-none img-file">
+                            </div>
+                             <img src="@Model.Path" class="img-edit" style="width:100px;height:100px" />
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Res_Id
+                                    </label>
+                                </div>
+                                <select asp-for="Res_Id" class="form-control bg-light border-0 small" asp-items="ViewBag.pro">
+                                    <option value="">Open this select menu</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Res_Model
+                                    </label>
+                                </div>
+                                <input asp-for="Res_model" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+@section ChangFile {
+    <script>
+        $(document).ready(function () {
+            $('#files').change(function () {
+                var srcCurrent = $('.img-edit').attr('src');
+                var s = $('#files').val();
+                var fileName = s.replace("C:\\fakepath\\", "");
+                var path = "/Images/" + fileName;
+                var data = $('#files')[0].files[0]
+                var formData = new FormData();
+                formData.append("ufile", data);
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/Img/UploadFile",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        $('.img-edit').attr('src', path);
+                        $('.img-file')[0].value = path;
+                    }
+                })
+                if (srcCurrent != '') {
+                    if (srcCurrent != path) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Admin/Img/DeleteFile",
+                            data: { ufile: srcCurrent },
+                            success: function (result) {
+                                $.notify("Success", "success");
+                            }
+                        })
+                    }
+                }
+            })
+        })
+    </script>
+
+}

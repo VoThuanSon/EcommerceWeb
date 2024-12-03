@@ -1,0 +1,193 @@
+﻿@model View_Customer
+
+
+@{
+    ViewData["Title"] = "Create_Customer";
+}
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh mục</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Add Customer</h6>
+        </div>
+        <div>
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary d-inline-block">Add</h6>
+                    <div class="float-right">
+                        <button type="submit" class="btn btn-success" id="click">Save</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Name
+                                    </label>
+                                </div>
+                                <input asp-for="Name" class="form-control bg-light border-0 small">
+                                <input asp-for="Address" type="hidden" value="ok" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Email
+                                    </label>
+                                </div>
+                                <input asp-for="Email" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Phone
+                                    </label>
+                                </div>
+                                <input asp-for="Phone" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        DateOfbirth
+                                    </label>
+                                </div>
+                                <input asp-for="DateofBirth" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Province
+                                    </label>
+                                </div>
+                                <select id="provinceSelect" name="provinceSelect" class="form-control bg-light border-0 small"> <option value="">-- Select a province --</option> </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        District
+                                    </label>
+                                </div>
+                                <select id="districtSelect" name="districtSelect" class="form-control bg-light border-0 small" disabled> <option value="">-- Select a district --</option> </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Ward
+                                    </label>
+                                </div>
+                                <select id="wardSelect" name="wardSelect" class="form-control bg-light border-0 small" disabled> <option value="">-- Select a ward --</option> </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Script {
+    <script>
+        $(document).ready(function () {
+            $('#click').on('click',function () {
+                var name = $('#Name').val();
+                var phone = $('#Phone').val();
+                var email = $('#Email').val();
+                var date = $('#DateofBirth').val();
+                var provine = Number($('#provinceSelect').val());
+                var address = $('#Address').val();
+                var dis = Number($('#districtSelect').val());
+                var war = Number($('#wardSelect').val());
+                $.ajax({
+                    type: 'POST',
+                    url: '/Admin/Order/Cre_Customer',
+                    data: { Name: name, Phone: phone, Email: email, DateofBirth: date, ProvinceId: provine, DistrictId: dis, WardId: war,Address:address },
+                    success: function (response) {
+                        if (response.success) {
+                            window.location.href = response.redirectUrl;
+                        } else {
+                            alert("Operation failed.");
+                        }
+                    },
+                    error: function (data) {
+                        alert("Đã có email hoặc phone ");
+                    }
+                  
+                })
+            })
+            $.ajax({
+                url: '/api/Address',
+                type: 'GET',
+                success: function (data) {
+                    var provinceSelect = $('#provinceSelect');
+                    $.each(data, function (index, province) {
+                        provinceSelect.append($('<option>', { value: province.id, text: province.name }));
+                    });
+                },
+                error: function () { alert('Failed to fetch provinces.'); }
+            });
+            $('#provinceSelect').change(function () {
+                var provinceId = $(this).val();
+                if (provinceId) {
+                    $.ajax({
+                        url: '/api/Address/' + provinceId + '/districts',
+                        type: 'GET',
+                        success: function (data) {
+                            var districtSelect = $('#districtSelect');
+                            districtSelect.empty().append('<option value="">-- Select a district --</option>');
+                            $.each(data, function (index, district) { districtSelect.append($('<option>', { value: district.id, text: district.name })); });
+                            districtSelect.prop('disabled', false);
+                        },
+                        error: function () { alert('Failed to fetch districts.'); }
+                    });
+                } else {
+                    $('#districtSelect').prop('disabled', true).empty().append('<option value="">-- Select a district --</option>');
+                    $('#wardSelect').prop('disabled', true).empty().append('<option value="">-- Select a ward --</option>');
+                }
+            });
+            $('#districtSelect').change(function () {
+                var provinceId = $('#provinceSelect').val();
+                var districtId = $(this).val();
+                if (districtId) {
+                    $.ajax({
+                        url: '/api/Address/' + provinceId + '/districts/' + districtId + '/wards',
+                        type: 'GET',
+                        success: function (data) {
+                            var wardSelect = $('#wardSelect');
+                            wardSelect.empty().append('<option value="">-- Select a ward --</option>');
+                            $.each(data, function (index, ward) { wardSelect.append($('<option>', { value: ward.id, text: ward.name })); });
+                            wardSelect.prop('disabled', false);
+                        },
+                        error: function () { alert('Failed to fetch wards.'); }
+                    });
+                } else {
+                    $('#wardSelect').prop('disabled', true).empty().append('<option value="">-- Select a ward --</option>');
+                }
+            });
+           
+        })
+    </script>
+}
+
+
+
+

@@ -1,0 +1,58 @@
+﻿@model View_Attr
+
+
+@{
+    ViewData["Title"] = "Edit_Attr";
+}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh mục</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Edit Attribute</h6>
+        </div>
+        <form asp-action="EditAttr">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary d-inline-block">Edit</h6>
+                    <div class="float-right">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Name
+                                    </label>
+                                </div>
+                                <input asp-for="Name" value="@Model.Name" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        DisplayType
+                                    </label>
+                                </div>
+                                <select class="custom-select" asp-for="displayType"  required asp-items="Html.GetEnumSelectList<Displaytype>()">
+                                    <option value="">Open this select menu</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

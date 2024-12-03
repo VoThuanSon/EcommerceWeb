@@ -1,0 +1,82 @@
+﻿@model SaleOrderLine
+
+
+@{
+    ViewData["Title"] = "Edit_SaleOrderLine";
+}
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh mục</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Edit SaleOrderLine</h6>
+        </div>
+        <form asp-action="Edit_SaleOrderLine">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary d-inline-block">Edit</h6>
+                    <div class="float-right">
+                        <button type="submit" class="btn btn-success" id="click">Save</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        CustomerId
+                                    </label>
+                                    <select asp-for="CustomerId" class="form-control bg-light border-0 small" asp-items="ViewBag.ct">
+                                        <option value="">Open this select menu</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        OrderId
+                                    </label>
+                                    <select asp-for="OrderId" class="form-control bg-light border-0 small" asp-items="ViewBag.or">
+                                        <option value="">Open this select menu</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        ProductID
+                                    </label>
+                                    <select asp-for="ProductId" class="form-control bg-light border-0 small" asp-items="ViewBag.pr">
+                                        <option value="">Open this select menu</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Quantity
+                                    </label>
+                                    <input asp-for="Quantity" class="form-control bg-light border-0 small" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+

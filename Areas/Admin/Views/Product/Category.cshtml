@@ -1,0 +1,42 @@
+﻿@model List<Category>
+@{
+    ViewData["Title"] = "Category";
+}
+
+<div class="container-fluid">
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-sm-flex align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Category</h6>
+            <a asp-action="Cre_Category" asp-controller="Product" class="btn btn-success">Add</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr class="text-info">
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>ParentId</th>
+                            <th>Action</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(var i in Model)
+                        {
+                             <tr>
+                                <td>@i.Id</td>
+                                <td>@i.Name</td>
+                                <td>@i.ParentId</td>
+                                <td><a asp-action="EditCategory" asp-route-id="@i.Id"><i class="bi bi-eraser-fill text-warning"></i></a></td>
+                                <td><a asp-action="DeleteCat" asp-route-id="@i.Id"><i class="bi bi-trash2-fill text-danger"></i></a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

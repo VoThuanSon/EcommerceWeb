@@ -1,0 +1,62 @@
+﻿@model ViewAttrAndPro
+
+
+@{
+    ViewData["Title"] = "Edit_Vari";
+}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh mục</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Edit Vari</h6>
+        </div>
+        <form asp-action="EditVari">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary d-inline-block">Edit</h6>
+                    <div class="float-right">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Attr_Id
+                                    </label>
+                                </div>
+                                <select asp-for="AtrrId" class="form-control bg-light border-0 small" asp-items="ViewBag.attr">
+                                    <option value="">Open this select menu</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Product_Id
+                                    </label>
+                                </div>
+                                <select asp-for="ProductId" class="form-control bg-light border-0 small" asp-items="ViewBag.pro">
+                                    <option value="">Open this select menu</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+

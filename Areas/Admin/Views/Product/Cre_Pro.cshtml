@@ -1,0 +1,310 @@
+﻿@model View_Product
+
+
+@{
+    ViewData["Title"] = "Create_Pro";
+}
+
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh mục</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Add Pro</h6>
+        </div>
+        <form asp-action="Cre_Pro" enctype="multipart/form-data">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary d-inline-block">Add</h6>
+                    <div class="float-right">
+                        <button type="submit" class="btn btn-success click">Save</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Name
+                                    </label>
+                                </div>
+                                <input type="hidden" value="@ViewBag.Id" class="id-pro" />
+                                <input asp-for="Name" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        DesShort
+                                    </label>
+                                </div>
+                                <input asp-for="DesShort" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        SKU
+                                    </label>
+                                </div>
+                                <input asp-for="SKU" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Price
+                                    </label>
+                                </div>
+                                <input asp-for="Price" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        SellPrice
+                                    </label>
+                                </div>
+                                <input asp-for="SellPrice" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Capital Price
+                                    </label>
+                                </div>
+                                <input asp-for="CapitalPrice" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        BarCode
+                                    </label>
+                                </div>
+                                <input asp-for="Barcode" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Quantity
+                                    </label>
+                                </div>
+                                <input asp-for="Quantity" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Pro_Oum
+                                    </label>
+                                </div>
+                                <select asp-for="UomId" class="form-control bg-light border-0 small" asp-items="ViewBag.oum">
+                                    <option value="">Open this select menu</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Category
+                                    </label>
+                                </div>
+                                <select asp-for="CategoryId" class="form-control bg-light border-0 small" asp-items="ViewBag.cat">
+                                    <option value="">Open this select menu</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Sale
+                                    </label>
+                                </div>
+                                <input asp-for="Sale" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                @foreach (var i in Model.Attr)
+                                {
+                                    <div class="input-group-append">
+                                        <label class="btn btn-primary" for="@i.Id">
+                                            @i.Name
+                                        </label>
+                                    </div>
+                                    <input type="checkbox" style="width:50px;height:40px" value="@i.Id" id="@i.Id" name="Attr">
+                                }
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <input type="file" id="files" class="d-none" />
+                                    <label class="btn btn-primary" for="files">
+                                        Add ImgPro
+                                    </label>
+                                </div>
+                                <input asp-for="Img" class="btn img-file d-none" />
+                            </div>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <img src="" style="width:100px;height:100px" class="img-edit d-none" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary" for="files-more">
+                                        Add Img More
+                                    </label>
+                                    <input type="file" asp-for="Files" id="files-more" class="d-none" multiple />
+                                </div>
+                            </div>
+                            <table>
+                                <tbody>
+                                    <tr class="parent">
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        DesLong
+                                    </label>
+                                </div>
+                                <textarea asp-for="DesLong" id="myArea1" style="width: 100%;" rows="5"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section ChangFile {
+    <script>
+        $(document).ready(function () {
+            $('#files').change(function () {
+                var srcCurrent = $('.img-edit').attr('src');
+                var s = $('#files').val();
+                var fileName = s.replace("C:\\fakepath\\", "");
+                var path = "/Images/" + fileName;
+                var data = $('#files')[0].files[0]
+                var formData = new FormData();
+                formData.append("ufile", data);
+                $.ajax({
+                    type: "POST",
+                    url: "/Admin/Img/UploadFile",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        $('.img-edit').removeClass('d-none');
+                        $('.img-edit').attr('src', path);
+                        $('.img-file')[0].value = path;
+                    }
+                })
+                if (srcCurrent != '') {
+                    if (srcCurrent != path) {
+                        $.ajax({
+                            type: "POST",
+                            url: "/Admin/Img/DeleteFile",
+                            data: { ufile: srcCurrent },
+                            success: function (result) {
+                                $.notify("Success", "success");
+                            }
+                        })
+                    }
+                }
+            })
+            $('.click').click(function () {
+                var idPr = Number($('.id-pro').val());
+                var array = $('input[name=Attr]:checked').map(function () {
+                    return Number($(this).val());
+                }).get()
+                $.each(array,function (index,value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Admin/Product/Cre_AttrAndPro',
+                        data: { ProductId:idPr, AtrrId: value  },
+                        success: function (result) {
+                          
+                        }
+                    })
+                })
+            })
+
+            $("#files-more").change(function () {
+                var files = $("#files-more")[0].files;
+                var formData = new FormData();
+                for (let i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    formData.append("files", file);
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '/Admin/Img/UploadMutiFile',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        for (let i = 0; i < files.length; i++) {
+                            var path = `/Images/${files[i].name}`;
+                            var string = `<td><div class="profile-pic" id="${i}">
+                                                                            <img src=${path} style="width:100px;height:100px" />
+                                                                                    <div class="edit rm-img" data-path="${path}" data-i="${i}"><i class="bi bi-trash2"></i></div>
+                                                                          </div></td>`
+                            $(".parent").append(string);
+                        }
+                    }
+                })
+            })
+            $(".parent").on('click', '.rm-img', function () {
+                var path = this.getAttribute('data-path');
+                var index = Number(this.getAttribute('data-i'));
+                $.ajax({
+                    type: 'POST',
+                    url: '/Admin/Img/DeleteFile',
+                    data: { ufile: path },
+                    success: function (result) {
+                        document.getElementById(index).remove();
+                        var files = $("#files-more")[0].files;
+                        var dataTransfer = new DataTransfer();
+                        for (let i = 0; i < files.length; i++) {
+                            if (index != i) {
+                                dataTransfer.items.add(files[i]);
+                            }
+                        }
+                        $('#files-more')[0].files = dataTransfer.files;
+                    }
+                })
+            })
+        })
+    </script>
+
+}

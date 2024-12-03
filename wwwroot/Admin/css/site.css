@@ -1,0 +1,21 @@
+﻿
+.profile-pic {
+    position: relative;
+    display: inline-block;
+}
+
+.edit {
+    padding-top: 7px;
+    padding-right: 7px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+}
+
+.bi-trash2 {
+    color: red;
+}
+.pointer{
+    cursor:pointer
+}

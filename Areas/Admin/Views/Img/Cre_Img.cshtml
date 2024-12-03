@@ -1,0 +1,128 @@
+﻿@model ViewImg
+
+
+@{
+    ViewData["Title"] = "Create_Img";
+}
+
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh mục</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Add Img</h6>
+        </div>
+        <form asp-action="Cre_Img" enctype="multipart/form-data">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary d-inline-block">Add</h6>
+                    <div class="float-right">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary" for="files">
+                                        Select Imgs
+                                    </label>
+                                    <input asp-for="Files" type="file" multiple class="d-none" id="files">
+                                </div>
+                                <input asp-for="Path" type="text" class="d-none" value="ok">
+                            </div>
+                            <table>
+                                <tbody>
+                                    <tr class="parent">
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Res_Id
+                                    </label>
+                                </div>
+                                <select asp-for="Res_Id" class="form-control bg-light border-0 small" asp-items="ViewBag.pro">
+                                    <option value="">Open this select menu</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Res_Model
+                                    </label>
+                                </div>
+                                <input asp-for="Res_model" type="text" class="form-control bg-light border-0 small">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+@section ChangFile {
+    <script>
+        $(document).ready(function () {
+            $("#files").change(function () {
+                var files = $("#files")[0].files;
+                var formData = new FormData();
+                for (let i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    formData.append("files", file);
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '/Admin/Img/UploadMutiFile',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        for (let i = 0; i < files.length; i++) {
+                            var path = `/Images/${files[i].name}`;
+                            var string = `<td><div class="profile-pic" id="${i}">
+                                                    <img src=${path} style="width:100px;height:100px" />
+                                                            <div class="edit rm-img" data-path="${path}" data-i="${i}"><i class="bi bi-trash2"></i></div>
+                                                  </div></td>`
+                            $(".parent").append(string);
+                        }
+                    }
+                })
+            })
+            $(".parent").on('click', '.rm-img', function () {
+                var path = this.getAttribute('data-path');
+                var index = Number(this.getAttribute('data-i'));
+                $.ajax({
+                    type: 'POST',
+                    url: '/Admin/Img/DeleteFile',
+                    data: { ufile: path },
+                    success: function (result) {
+                        document.getElementById(index).remove();
+                        var files = $("#files")[0].files;
+                        var dataTransfer = new DataTransfer();
+                        for (let i = 0; i < files.length; i++) {
+                            if (index != i) {
+                                dataTransfer.items.add(files[i]);
+                            }
+                        }
+                        $('#files')[0].files = dataTransfer.files;
+                    }
+                })
+            })
+        })
+    </script>
+
+}
