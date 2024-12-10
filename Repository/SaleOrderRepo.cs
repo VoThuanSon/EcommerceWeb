@@ -1,4 +1,5 @@
-﻿using WebClothes.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WebClothes.Data;
 using WebClothes.Irepository;
 using WebClothes.Models;
 
@@ -18,16 +19,6 @@ namespace WebClothes.Repository
             _shopContext.SaveChanges();
             
         }
-        public int LastOrder()
-        {
-            var pro = _shopContext.SaleOrderLines.OrderBy(p => p.Id).LastOrDefault();
-            if (pro != null)
-            {
-                return pro.Id + 1;
-            }
-            return 1;
-        }
-
 
         public void Delete(SaleOrder order)
         {
@@ -50,5 +41,15 @@ namespace WebClothes.Repository
         {
             return _shopContext.SaleOrders.FirstOrDefault(p => p.Id == id);
         }
-    }
+
+        public SaleOrder SaleOrder(SaleOrder order)
+        {
+            return _shopContext.SaleOrders.FirstOrDefault(p => p.WardId ==  order.WardId && p.ProvinceId == order.ProvinceId && p.DistrictId == order.DistrictId && p.Date_Order == order.Date_Order && p.CustomerId == order.CustomerId && p.PaymentMethod == order.PaymentMethod);
+        }
+
+		public List<SaleOrder> SaleOrderUser(int id)
+		{
+            return _shopContext.SaleOrders.Where(p => p.CustomerId == id).ToList();
+		}
+	}
 }

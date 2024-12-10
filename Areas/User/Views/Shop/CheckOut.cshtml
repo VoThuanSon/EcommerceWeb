@@ -1,0 +1,235 @@
+﻿@if (ViewData["UserId"] != null)
+{
+    <p class="UserId d-none">@ViewData["UserId"]</p>
+}
+<div class="container">
+    <div class="row gutters">
+        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row gutters">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <h6 class="mb-2 text-primary">Personal Details</h6>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="fullName">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" placeholder="Enter full name">
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="eMail">Email</label>
+                                <input type="email" class="form-control" id="eMail" placeholder="Enter email ID">
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="phone">Phone</label>
+                                <input type="text" class="form-control" id="phone" placeholder="Enter phone number">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gutters">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <h6 class="mt-3 mb-2 text-primary">Address</h6>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="provinceSelect">Province</label>
+                                <select id="provinceSelect" name="provinceSelect" class="form-control bg-light border-0 small"> <option value="">-- Select a province --</option> </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="districtSelect">District</label>
+                                <select id="districtSelect" name="districtSelect" class="form-control bg-light border-0 small" disabled> <option value="">-- Select a district --</option> </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label for="wardSelect">Ward</label>
+                                <select id="wardSelect" name="wardSelect" class="form-control bg-light border-0 small" disabled> <option value="">-- Select a ward --</option> </select>
+                            </div>
+                        </div>
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mt-3">
+                            <h5>Payment Method</h5>
+                            <div class="form-group">
+                                <label for="VNPAY">VNPAY</label>
+                                <input type="radio" id="VNPAY" name="Payment" value="VNPAY" />
+                                <label for="COD">COD</label>
+                                <input type="radio" id="COD" name="Payment" value="COD" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row gutters mt-3">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="text-right">
+                                <a asp-action="Cart" asp-controller="Shop" class="btn btn-secondary">Cancel</a>
+                                <button type="button" id="click" name="submit" class="btn btn-primary order">Order</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Script {
+    <script>
+        $(document).ready(function () {
+            var today = new Date();
+            var day = ('0' + today.getDate()).slice(-2);
+            var month = ('0' + (today.getMonth() + 1)).slice(-2);
+            var year = today.getFullYear();
+            var todayFormatted = `${year}-${month}-${day}`;
+            $.ajax({
+                url: '/api/Address',
+                type: 'GET',
+                success: function (data) {
+                    var provinceSelect = $('#provinceSelect');
+                    $.each(data, function (index, province) {
+                        provinceSelect.append($('<option>', { value: province.id, text: province.name }));
+                    });
+                },
+                error: function () { alert('Failed to fetch provinces.'); }
+            });
+            $('#provinceSelect').change(function () {
+                var provinceId = $(this).val();
+                if (provinceId) {
+                    $.ajax({
+                        url: '/api/Address/' + provinceId + '/districts',
+                        type: 'GET',
+                        success: function (data) {
+                            var districtSelect = $('#districtSelect');
+                            districtSelect.empty().append('<option value="">-- Select a district --</option>');
+                            $.each(data, function (index, district) { districtSelect.append($('<option>', { value: district.id, text: district.name })); });
+                            districtSelect.prop('disabled', false);
+                        },
+                        error: function () { alert('Failed to fetch districts.'); }
+                    });
+                } else {
+                    $('#districtSelect').prop('disabled', true).empty().append('<option value="">-- Select a district --</option>');
+                    $('#wardSelect').prop('disabled', true).empty().append('<option value="">-- Select a ward --</option>');
+                }
+            });
+            $('#districtSelect').change(function () {
+                var provinceId = $('#provinceSelect').val();
+                var districtId = $(this).val();
+                if (districtId) {
+                    $.ajax({
+                        url: '/api/Address/' + provinceId + '/districts/' + districtId + '/wards',
+                        type: 'GET',
+                        success: function (data) {
+                            var wardSelect = $('#wardSelect');
+                            wardSelect.empty().append('<option value="">-- Select a ward --</option>');
+                            $.each(data, function (index, ward) { wardSelect.append($('<option>', { value: ward.id, text: ward.name })); });
+                            wardSelect.prop('disabled', false);
+                        },
+                        error: function () { alert('Failed to fetch wards.'); }
+                    });
+                } else {
+                    $('#wardSelect').prop('disabled', true).empty().append('<option value="">-- Select a ward --</option>');
+                }
+            });
+            var UserId = $('.UserId').text();
+            if (UserId) {
+                $('#click').on('click', function () {
+                    var payment = $('input[name=Payment]:checked').val();
+                    var name = $('#fullName').val();
+                    var email = $('#eMail').val();
+                    var phone = $('#phone').val();
+                    var address = "ok";
+                    var dis = Number($('#districtSelect').val());
+                    var provine = Number($('#provinceSelect').val());
+                    var war = Number($('#wardSelect').val());
+                    $.ajax({
+                        type: 'GET',
+                        url: '/User/Shop/GetCusId',
+                        data: { Name: name, Phone: phone, Email: email, DateofBirth: todayFormatted, ProvinceId: provine, DistrictId: dis, WardId: war, Address: address },
+                        success: function (cusId) {
+                            $.ajax({
+                                type: 'POST',
+                                url: '/User/Shop/Cre_Order',
+                                data: { Name: name, Date_Order: todayFormatted, ProvinceId: provine, DistrictId: dis, WardId: war, Address: address, Status: "Wait", CustomerProfileId: cusId, products: "ok" ,PaymentMethod:payment},
+                                success: function (response) {
+                                    var cart = localStorage.getItem(`shoppingCart-${UserId}`);
+                                    cart = cart ? JSON.parse(cart) : [];
+                                    cart.forEach(item => {
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: '/User/Shop/Cre_SaleOrderLine',
+                                            data: { ProductId: item.ProductId, Quantity: item.Quantity, CustomerId: cusId, SaleOrderId: response.id, Variant: item.Attributes.Color + "--" + item.Attributes.Size },
+                                            success: function (result) {
+                                                if (response.success) {
+                                                    localStorage.removeItem(`shoppingCart-${UserId}`);
+                                                    window.location.href = result.redirectUrl;
+                                                } else {
+                                                    alert("Operation failed.");
+                                                }
+                                            }
+                                        })
+                                    });
+                                },
+                                error: function (data) {
+                                    alert("Đã có lỗi");
+                                }
+
+                            })
+                        }
+                    })
+
+                })
+            } else {
+                $('#click').on('click', function () {
+                    var payment = $('input[name=Payment]:checked').val();
+                    var name = $('#fullName').val();
+                    var email = $('#eMail').val();
+                    var phone = $('#phone').val();
+                    var address = "ok";
+                    var dis = Number($('#districtSelect').val());
+                    var provine = Number($('#provinceSelect').val());
+                    var war = Number($('#wardSelect').val());
+                    $.ajax({
+                        type: 'GET',
+                        url: '/User/Shop/GetCusId',
+                        data: { Name: name, Phone: phone, Email: email, DateofBirth: todayFormatted, ProvinceId: provine, DistrictId: dis, WardId: war, Address: address },
+                        success: function (cusId) {
+                            localStorage.setItem('orderNoLogin', JSON.stringify(cusId));
+                            $.ajax({
+                                type: 'POST',
+                                url: '/User/Shop/Cre_Order',
+                                data: { Name: name, Date_Order: todayFormatted, ProvinceId: provine, DistrictId: dis, WardId: war, Address: address, Status: "Wait", CustomerProfileId: cusId, products: "ok" ,PaymentMethod:payment},
+                                success: function (response) {
+                                    var cart = localStorage.getItem(`shoppingCart`);
+                                    cart = cart ? JSON.parse(cart) : [];
+                                    cart.forEach(item => {
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: '/User/Shop/Cre_SaleOrderLine',
+                                            data: { ProductId: item.ProductId, Quantity: item.Quantity, CustomerId: cusId, SaleOrderId: response.id, Variant: item.Attributes.Color + "--" + item.Attributes.Size },
+                                            success: function (result) {
+                                                if (response.success) {
+                                                    localStorage.removeItem(`shoppingCart`);
+                                                    window.location.href = result.redirectUrl;
+                                                } else {
+                                                    alert("Operation failed.");
+                                                }
+                                            }
+                                        })
+                                    });
+                                },
+                                error: function (data) {
+                                    alert("Đã có lỗi");
+                                }
+
+                            })
+                        }
+                    })
+
+                })
+            }
+        });
+    </script>
+}

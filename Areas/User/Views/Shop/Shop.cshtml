@@ -1,29 +1,61 @@
-﻿@model List<Product>
-<section class="py-5">
-    <div class="container px-4 px-lg-5 mt-5">
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-            @foreach (var i in Model)
-            {
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Product image-->
-                        <img class="card-img-top" src="@i.Img" alt="..." />
-                        <!-- Product details-->
-                        <div class="card-body p-4">
-                            <div class="text-center">
-                                <!-- Product name-->
-                                <h5 class="fw-bolder">@i.Name</h5>
-                                <!-- Product price-->
-                                $@i.SellPrice - $@i.Price
-                            </div>
-                        </div>
-                        <!-- Product actions-->
-                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" asp-action="ProDetail" asp-controller="Shop" asp-route-id="@i.Id">View options</a></div>
-                        </div>
+﻿@model PaginatedList<Product>
+
+<div class="container-fluid">
+    <div class="row">
+       
+        <div class="col-md-12">
+            <section class="py-5">
+                <div class="container px-4 px-lg-5 mt-5">
+                    <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                        @if(Model.Count > 0)
+                        {
+                            @foreach (var i in Model)
+                            {
+                                <div class="col mb-5">
+                                    <div class="card h-100">
+                                        <!-- Product image-->
+                                        <img class="card-img-top" src="@i.Img" alt="..." />
+                                        <!-- Product details-->
+                                        <div class="card-body p-4">
+                                            <div class="text-center">
+                                                <!-- Product name-->
+                                                <h5 class="fw-bolder">@i.Name</h5>
+                                                <!-- Product price-->
+                                                <p class="text-info">$@i.Price</p>
+                                            </div>
+                                        </div>
+                                        <!-- Product actions-->
+                                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                                            <div class="text-center"><a class="btn btn-outline-dark mt-auto" asp-action="ProDetail" asp-controller="Shop" asp-route-id="@i.Id">View options</a></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <h1>Không tìm thấy sản phẩm nào</h1>
+                        }
+
                     </div>
+                    @{
+                        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+                        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+                    }
+
+                    <a asp-action="Shop"
+                       asp-route-pageNumber="@(Model.PageIndex - 1)"
+                       class="btn btn-default @prevDisabled">
+                        Previous
+                    </a>
+                    <a asp-action="Shop"
+                       asp-route-pageNumber="@(Model.PageIndex + 1)"
+                       class="btn btn-default @nextDisabled">
+                        Next
+                    </a>
                 </div>
-            }
+            </section>
         </div>
     </div>
-</section>
+</div>
+

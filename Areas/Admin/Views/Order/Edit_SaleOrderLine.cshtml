@@ -1,4 +1,4 @@
-﻿@model SaleOrderLine
+﻿@model View_OrderLine
 
 
 @{
@@ -44,7 +44,7 @@
                                     <label class="btn btn-primary disabled">
                                         OrderId
                                     </label>
-                                    <select asp-for="OrderId" class="form-control bg-light border-0 small" asp-items="ViewBag.or">
+                                    <select asp-for="SaleOrderId" class="form-control bg-light border-0 small" asp-items="ViewBag.or">
                                         <option value="">Open this select menu</option>
                                     </select>
                                 </div>
@@ -69,6 +69,16 @@
                                         Quantity
                                     </label>
                                     <input asp-for="Quantity" class="form-control bg-light border-0 small" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Variant
+                                    </label>
+                                    <input asp-for="Variant" class="form-control bg-light border-0 small" />
                                 </div>
                             </div>
                         </div>

@@ -1,6 +1,9 @@
-﻿using WebClothes.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.EnvironmentVariables;
+using WebClothes.Data;
 using WebClothes.Irepository;
 using WebClothes.Models;
+using WebClothes.ViewModels;
 
 namespace WebClothes.Repository
 {
@@ -24,14 +27,32 @@ namespace WebClothes.Repository
             _shopContext.SaveChanges();
         }
 
+
         public Product GetProductById(int id)
         {
             return _shopContext.Products.Where(p => p.Id == id).FirstOrDefault();
         }
 
-        public Product GetProductByName(string name)
+        public IQueryable<Product> GetProductByName(string name)
         {
-            return _shopContext.Products.Where(p => p.Name == name).FirstOrDefault();
+            return _shopContext.Products.Where(p => p.Name.Contains(name));
+        }
+
+        public IQueryable<Product> GetProductCategory(int? id)
+        {
+            if (id == 0)
+            {
+                return _shopContext.Products;
+            }
+            var chil = _shopContext.Categories.Where(c => c.ParentId == id).Select(c => c.Id).ToList();
+            if(chil.Count > 0)
+            {
+                var pro = _shopContext.Products.Where(p => chil.Contains(p.CategoryId));
+                return pro;
+            }else
+            {
+                return _shopContext.Products.Where(p => p.CategoryId == id);
+            }
         }
 
         public List<Product> GetProductRelate(int id)
@@ -41,14 +62,14 @@ namespace WebClothes.Repository
 
         public List<Product> GetProducts()
         {
-            return _shopContext.Products.ToList();
+            return _shopContext.Products.Include(p => p.Category).Include(p => p.Uom).ToList();
         }
 
         public int LastPro()
         {
-            var pro =  _shopContext.Products.OrderBy(p => p.Id).LastOrDefault();
+            var pro = _shopContext.Products.OrderBy(p => p.Id).LastOrDefault();
             if(pro != null)
-            {
+            { 
                 return pro.Id + 1;
             }
             return 1;

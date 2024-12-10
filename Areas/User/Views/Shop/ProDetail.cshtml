@@ -1,7 +1,10 @@
 ﻿@model ProductDetail
-@{
-    var first = true;
+@if (ViewData["UserId"] != null)
+{
+     <p class="UserId d-none">@ViewData["UserId"]</p>
 }
+
+
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="row gx-4 gx-lg-5 align-items-center">
@@ -33,8 +36,8 @@
                 <div class="small mb-1">SKU: @Model.Product.SKU</div>
                 <h1 class="display-5 fw-bolder">@Model.Product.Name</h1>
                 <div class="fs-5 mb-5">
-                    <span class="text-decoration-line-through">$@Model.Product.Price</span>
-                    <span>$@Model.Product.CapitalPrice</span>
+                    <span class="text-decoration-line-through text-danger">$@Model.Product.Price</span>
+                    <span class="text-info">$@Model.Product.SellPrice</span>
                 </div>
                 <p class="lead">@Model.Product.DesShort</p>
 
@@ -42,22 +45,22 @@
                     @foreach (var i in Model.attribute_Pros)
                     {
                         <div class="col-md-6">
-                            <label for="@i.Name" class="fs-4" >@i.Name</label>
-                            <div id="@i.Id" data-name="@i.Name">
+                            <label for="@i.Name" class="fs-4">@i.Name</label>
+                            <div id="@i.Id" data-name="@i.Name" data-type="@i.DisplayType">
                             </div>
                         </div>
                     }
                 </div>
                 <div class="d-flex">
                     <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" />
-                    <button class="btn btn-outline-dark flex-shrink-0 me-3" type="button">
+                    <button class="btn btn-outline-dark flex-shrink-0 me-3 add-cart" type="button">
                         <i class="bi-cart-fill me-1"></i>
                         Add to cart
                     </button>
-                    <button class="btn btn-outline-dark flex-shrink-0" type="button">
+                    <a class="btn btn-outline-dark flex-shrink-0 buy-now">
                         <i class="bi-cart-fill me-1"></i>
                         Buy Now
-                    </button>
+                    </a>
                 </div>
             </div>
             <div class="col-md-6">
@@ -89,6 +92,7 @@
                 </div>
             </div>
             <div class="col-md-6">
+               
             </div>
         </div>
     </div>
@@ -110,7 +114,7 @@
                                 <!-- Product name-->
                                 <h5 class="fw-bolder">@i.Name</h5>
                                 <!-- Product price-->
-                                $@i.Price - $@i.CapitalPrice
+                                <p class="text-info">$@i.Price</p>
                             </div>
                         </div>
                         <!-- Product actions-->
@@ -120,8 +124,6 @@
                     </div>
                 </div>
             }
-
-
         </div>
     </div>
 </section>
@@ -131,19 +133,93 @@
             for (var i = 1; i <= @Model.attribute_Pros.Count; i++) {
                 let inputContainer = $(`#${i}`);
                 let name = inputContainer.attr('data-name');
+                let type = inputContainer.attr('data-type');
                 $.ajax({
                     type: 'GET',
                     url: '/User/Home/GetAttr_Va',
                     data: { id: i },
                     success: function (data) {
                         $.each(data, function (index, inputData) {
-                            var inputHtml = `<input type="radio" name="${name}" id="${inputData.id}" value="${inputData.name}" />
-                                                     <label for="${inputData.id}">${inputData.name}</label><br>`;
+                            var inputHtml = `<input type="${type}" name="${name}" id="${inputData.id}" value="${inputData.name}" />
+                                              <label for="${inputData.id}" >${inputData.name}</label><br>`;
                             inputContainer.append(inputHtml);
                         });
                     }
                 })
             }
+            $('.add-cart').click(function () {
+                if ($('.UserId').text()) {
+                    var UserId = $('.UserId').text();
+                    var quan = Number($('#inputQuantity').val());
+                    var proId = @Model.Product.Id;
+                    var Color = $('input[name="Color"]:checked').val();
+                    var Size = $('input[name="Size"]:checked').val();
+                    var cart = localStorage.getItem(`shoppingCart-${UserId}`);
+                    cart = cart ? JSON.parse(cart) : [];
+                    const item = cart.find(i => i.ProductId === proId && i.Attributes.Color === Color && i.Attributes.Size == Size);
+                    if (item) {
+                        item.Quantity += Number(quan);
+                        localStorage.setItem(`shoppingCart-${UserId}`, JSON.stringify(cart));
+                        alert(`Update ${quan}`)
+                        location.reload();
+                    }
+                    else {
+                        if (Color != undefined && Size != undefined) {
+                            cart.push({UserId: UserId, ProductId: proId, Quantity: quan, Attributes: { Color: Color, Size: Size } });
+                            localStorage.setItem(`shoppingCart-${UserId}`, JSON.stringify(cart));
+                            alert("Success")
+                            location.reload();
+                        } else {
+                            alert("Fill all field")
+                        }
+                    }
+                } else {
+                    var quan = Number($('#inputQuantity').val());
+                    var proId = @Model.Product.Id;
+                    var Color = $('input[name="Color"]:checked').val();
+                    var Size = $('input[name="Size"]:checked').val();
+                    var cart = localStorage.getItem('shoppingCart');
+                    cart = cart ? JSON.parse(cart) : [];
+                    const item = cart.find(i => i.ProductId === proId && i.Attributes.Color === Color && i.Attributes.Size == Size);
+                    if (item) {
+                        item.Quantity += Number(quan);
+                        localStorage.setItem('shoppingCart', JSON.stringify(cart));
+                        alert(`Update ${quan}`)
+                        location.reload();
+                    }
+                    else {
+                        if (Color != undefined && Size != undefined) {
+                            cart.push({ ProductId: proId, Quantity: quan, Attributes: { Color: Color, Size: Size } });
+                            localStorage.setItem('shoppingCart', JSON.stringify(cart));
+                            alert("Success")
+                            location.reload();
+                        } else {
+                            alert("Fill all field")
+                        }
+                    }
+                }
+               
+            })
+
+
+
+            $('.buy-now').click(function () {
+                if ($('.UserId').text()) {
+                    var UserId = $('.UserId').text();
+                    var quan = Number($('#inputQuantity').val());
+                    var proId = @Model.Product.Id;
+                    var Color = $('input[name="Color"]:checked').val();
+                    var Size = $('input[name="Size"]:checked').val();
+                    
+                } else {
+                    var quan = Number($('#inputQuantity').val());
+                    var proId = @Model.Product.Id;
+                    var Color = $('input[name="Color"]:checked').val();
+                    var Size = $('input[name="Size"]:checked').val();
+                   
+                }
+
+            })
         })
     </script>
 }

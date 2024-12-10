@@ -88,7 +88,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <table class="table table-bordered"  width="100%" cellspacing="0">
                                 <thead>
                                     <tr class="d-none thead">
                                         <th>Product</th>
@@ -246,7 +246,7 @@
                 $.ajax({
                     type: 'POST',
                     url: '/Admin/Order/Cre_Order',
-                    data: { Name: name, Date_Order: todayFormatted, ProvinceId: provine, DistrictId: dis, WardId: war, Address: address, Status: status, CustomerId: cusId,products: "ok" },
+                    data: { Name: name, Date_Order: todayFormatted, ProvinceId: provine, DistrictId: dis, WardId: war, Address: address, Status: status, CustomerProfileId: cusId,products:"ok"},
                     success: function (response) {
                         for (let i = 0; i < listPr.length; i++) {
                             var pro = Number(listPr[i].value);
@@ -254,7 +254,7 @@
                             $.ajax({
                                 type: 'POST',
                                 url: '/Admin/Order/Cre_SaleOrderLine',
-                                data: { ProductId: pro, Quantity: quantity, CustomerId: cusId, OrderId: response.id },
+                                data: { ProductId: pro, Quantity: quantity, CustomerId: cusId, SaleOrderId: response.id,Variant: "null"},
                                 success: function (result) {
                                     if (response.success) {
                                         window.location.href = result.redirectUrl;

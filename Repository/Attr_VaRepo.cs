@@ -1,4 +1,5 @@
-﻿using WebClothes.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WebClothes.Data;
 using WebClothes.Irepository;
 using WebClothes.Models;
 
@@ -25,7 +26,6 @@ namespace WebClothes.Repository
 
         public List<Attribute_Value> Get()
         {
-            
             return _shopContext.Attribute_Values.ToList();
         }
 

@@ -17,6 +17,7 @@
                         <tr class="text-info">
                             <th>Id</th>
                             <th>Name</th>
+                            <th>Values</th>
                             <th>Display Type</th>
                             <th>Action</th>
                             <th>Action</th>
@@ -28,6 +29,11 @@
                             <tr>
                                 <th>@i.Id</th>
                                 <th>@i.Name</th>
+                                <th>@foreach(var ii in i.Values)
+                                    {
+                                        <span>@ii.Name</span>
+                                    }
+                                </th>
                                 <th>@i.DisplayType</th>
                                 <th><a asp-action="EditAttr" asp-route-id="@i.Id"><i class="bi bi-eraser-fill text-warning"></i></a></th>
                                 <th><a asp-action="DeleteAttr" asp-route-id="@i.Id"><i class="bi bi-trash2-fill text-danger"></i></a></th>

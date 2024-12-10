@@ -33,11 +33,10 @@ namespace WebClothes.Repository
             return _shopcontext.imgs.ToList();
         }
 
-        public List<Img> GetImgPro(int res_id)
+        public List<Img> GetImgResId(int res_id)
         {
             return _shopcontext.imgs.Where(p => p.Res_Id == res_id).ToList();
         }
-
         public void Update(Img img)
         {
             _shopcontext.imgs.Update(img);

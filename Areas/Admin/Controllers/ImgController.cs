@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WebClothes.Irepository;
@@ -8,6 +9,8 @@ using WebClothes.ViewModels;
 namespace WebClothes.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "RequireAdministratorRole")]
+
     public class ImgController : Controller
     {
         private readonly IProUnitOfWork _proUnitOfWork;

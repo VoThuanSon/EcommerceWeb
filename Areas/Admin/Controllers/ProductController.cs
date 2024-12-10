@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting.Server;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ using static System.Net.Mime.MediaTypeNames;
 namespace WebClothes.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "RequireAdministratorRole")]
     public class ProductController : Controller
     {
         private readonly IProUnitOfWork _proUnitOfWork;
@@ -45,7 +47,6 @@ namespace WebClothes.Areas.Admin.Controllers
             ViewBag.oum = new SelectList(oum, "Id", "Name", null);
             var cat = _proUnitOfWork.Category.GetCategories();
             ViewBag.cat = new SelectList(cat, "Id", "Name", null);
-            ViewBag.attr = new SelectList(s, "Id", "Name", null);
             ViewBag.Id = _proUnitOfWork.Product.LastPro();
 
             return View(model);
@@ -77,7 +78,6 @@ namespace WebClothes.Areas.Admin.Controllers
                 foreach (var file in model.Files)
                 {
                     var s = new Img();
-                    var prId = _proUnitOfWork.Product.LastPro();
                     var path = "/Images/" + file.FileName;
                     s.Res_model = "Product";
                     s.Res_Id = Id;
@@ -317,7 +317,7 @@ namespace WebClothes.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var s = new Attribute_Value();
-                s.Attribute_Id = model.Attr_Id;
+                s.Attribute_Id= model.Attr_Id;
                 s.Fixed_Price = model.Fixed_Price;
                 s.Name = model.Name;
                 _proUnitOfWork.Attr_Va.Create(s);
@@ -361,7 +361,6 @@ namespace WebClothes.Areas.Admin.Controllers
             return RedirectToAction("Attr_Val");
         }
 
-
         [HttpGet]
         public IActionResult AttrAndPro()
         {
@@ -384,7 +383,7 @@ namespace WebClothes.Areas.Admin.Controllers
             {
                 var at = new AttrAndPro();
                 at.Id = model.Id;
-                at.AtrrId = model.AtrrId;
+                at.AtrrId = model.Attribute_ProId;
                 at.ProductId = model.ProductId;
                 _proUnitOfWork.AttrAndPro.Create(at);
                 return RedirectToAction("AttrAndPro");
@@ -408,7 +407,7 @@ namespace WebClothes.Areas.Admin.Controllers
             {
                 var at = new AttrAndPro();
                 at.Id = model.Id;
-                at.AtrrId = model.AtrrId;
+                at.AtrrId = model.Attribute_ProId;
                 at.ProductId = model.ProductId;
                 _proUnitOfWork.AttrAndPro.Update(at);
                 return RedirectToAction("AttrAndPro");

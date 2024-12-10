@@ -5,6 +5,6 @@ namespace WebClothes.ViewModels
     public class Menu
     {
         public Category Category { get; set; }
-        public List<Category> ChildCategory { get; set;}
+        public List<Category> Categories { get; set; }
     }
 }

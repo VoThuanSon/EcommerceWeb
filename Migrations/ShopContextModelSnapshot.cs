@@ -232,7 +232,7 @@ namespace WebClothes.Migrations
 
                     b.HasIndex("saleOrdersId");
 
-                    b.ToTable("ProductSaleOrder");
+                    b.ToTable("ProductSaleOrder", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.AttrAndPro", b =>
@@ -251,7 +251,7 @@ namespace WebClothes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AttrAndPro");
+                    b.ToTable("AttrAndPro", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.Attribute_Pro", b =>
@@ -276,7 +276,7 @@ namespace WebClothes.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Attributes");
+                    b.ToTable("Attributes", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.Attribute_Value", b =>
@@ -304,7 +304,7 @@ namespace WebClothes.Migrations
 
                     b.HasIndex("Attribute_ProId");
 
-                    b.ToTable("Attribute_Values");
+                    b.ToTable("Attribute_Values", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.Category", b =>
@@ -324,7 +324,7 @@ namespace WebClothes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.CustomerProfile", b =>
@@ -367,7 +367,7 @@ namespace WebClothes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CustomerProfiles");
+                    b.ToTable("CustomerProfiles", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.District", b =>
@@ -389,7 +389,7 @@ namespace WebClothes.Migrations
 
                     b.HasIndex("ProvinceId");
 
-                    b.ToTable("Districts");
+                    b.ToTable("Districts", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.Img", b =>
@@ -413,7 +413,7 @@ namespace WebClothes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("imgs");
+                    b.ToTable("imgs", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.Product", b =>
@@ -475,7 +475,7 @@ namespace WebClothes.Migrations
 
                     b.HasIndex("UomId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.ProductUom", b =>
@@ -492,7 +492,7 @@ namespace WebClothes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProductUom");
+                    b.ToTable("ProductUom", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.Province", b =>
@@ -509,7 +509,7 @@ namespace WebClothes.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Provinces");
+                    b.ToTable("Provinces", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.SaleOrder", b =>
@@ -536,6 +536,10 @@ namespace WebClothes.Migrations
                     b.Property<int>("DistrictId")
                         .HasColumnType("int");
 
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ProvinceId")
                         .HasColumnType("int");
 
@@ -550,7 +554,7 @@ namespace WebClothes.Migrations
 
                     b.HasIndex("CustomerProfileId");
 
-                    b.ToTable("SaleOrders");
+                    b.ToTable("SaleOrders", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.SaleOrderLine", b =>
@@ -564,18 +568,26 @@ namespace WebClothes.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<int>("SaleOrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Variant")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("SaleOrderLines");
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SaleOrderId");
+
+                    b.ToTable("SaleOrderLines", (string)null);
                 });
 
             modelBuilder.Entity("WebClothes.Models.Ward", b =>
@@ -597,7 +609,7 @@ namespace WebClothes.Migrations
 
                     b.HasIndex("DistrictId");
 
-                    b.ToTable("Wards");
+                    b.ToTable("Wards", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -715,6 +727,23 @@ namespace WebClothes.Migrations
                         .HasForeignKey("CustomerProfileId");
                 });
 
+            modelBuilder.Entity("WebClothes.Models.SaleOrderLine", b =>
+                {
+                    b.HasOne("WebClothes.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebClothes.Models.SaleOrder", null)
+                        .WithMany("Lines")
+                        .HasForeignKey("SaleOrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("WebClothes.Models.Ward", b =>
                 {
                     b.HasOne("WebClothes.Models.District", null)
@@ -747,6 +776,11 @@ namespace WebClothes.Migrations
             modelBuilder.Entity("WebClothes.Models.Province", b =>
                 {
                     b.Navigation("Districts");
+                });
+
+            modelBuilder.Entity("WebClothes.Models.SaleOrder", b =>
+                {
+                    b.Navigation("Lines");
                 });
 #pragma warning restore 612, 618
         }

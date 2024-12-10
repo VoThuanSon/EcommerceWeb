@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
@@ -18,27 +19,29 @@ using static System.Net.WebRequestMethods;
 namespace WebClothes.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Policy = "RequireAdministratorRole")]
     public class OrderController : Controller
     {
         private readonly IOrderUnitOfWork _orderUnitOfWork;
         private readonly IProUnitOfWork _proUnitOfWork;
 
-        public OrderController(IOrderUnitOfWork orderUnitOfWork,HttpClient httpClient,IProUnitOfWork proUnitOfWork)
+        public OrderController(IOrderUnitOfWork orderUnitOfWork, HttpClient httpClient, IProUnitOfWork proUnitOfWork)
         {
             _orderUnitOfWork = orderUnitOfWork;
             _proUnitOfWork = proUnitOfWork;
         }
-        [HttpGet] 
-        public ActionResult<List<CustomerProfile>> GetCustomerProfiles() {
-            var customerProfiles = _orderUnitOfWork.CustomerRepo.GetProfiles(); 
-            return Ok(customerProfiles); 
+        [HttpGet]
+        public ActionResult<List<CustomerProfile>> GetCustomerProfiles()
+        {
+            var customerProfiles = _orderUnitOfWork.CustomerRepo.GetProfiles();
+            return Ok(customerProfiles);
         }
         public IActionResult Customer()
         {
             var model = _orderUnitOfWork.CustomerRepo.GetProfiles();
             return View(model);
         }
-        [HttpGet] 
+        [HttpGet]
         public IActionResult Cre_Customer()
         {
             return View();
@@ -46,7 +49,7 @@ namespace WebClothes.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Cre_Customer(View_Customer model)
         {
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var cs = new CustomerProfile();
                 var prn = _orderUnitOfWork.ProvinceRepo.GetProvinceById(model.ProvinceId);
@@ -124,6 +127,18 @@ namespace WebClothes.Areas.Admin.Controllers
         public IActionResult SaleOrder()
         {
             var mod = _orderUnitOfWork.SaleOrderRepo.SaleOrders();
+            foreach (var i in mod)
+            {
+                var listPro = new List<Product>();
+                var listOrder = _orderUnitOfWork.saleOrderLine.GetSaleOrders(i.Id);
+                foreach (var ii in listOrder)
+                {
+                    var pr = new Product();
+                    pr = _proUnitOfWork.Product.GetProductById(ii.ProductId);
+                    listPro.Add(pr);
+                }
+                i.products = listPro;
+            }
             return View(mod);
         }
         [HttpGet]
@@ -141,10 +156,9 @@ namespace WebClothes.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Cre_Order(View_Order model)
         {
-            var id = _orderUnitOfWork.SaleOrderRepo.LastOrder();
-            if(ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var customer = _orderUnitOfWork.CustomerRepo.GetProfileById(model.CustomerId);
+                var customer = _orderUnitOfWork.CustomerRepo.GetProfileById(model.CustomerProfileId);
                 var order = new SaleOrder();
                 var prn = _orderUnitOfWork.ProvinceRepo.GetProvinceById(model.ProvinceId);
                 var disn = _orderUnitOfWork.districtRepo.GetDistrict(model.DistrictId);
@@ -156,7 +170,8 @@ namespace WebClothes.Areas.Admin.Controllers
                     order.ProvinceId = customer.ProvinceId;
                     order.DistrictId = customer.DistrictId;
                     order.WardId = customer.WardId;
-                }else
+                }
+                else
                 {
                     order.Address = address;
                     order.ProvinceId = model.ProvinceId;
@@ -164,9 +179,12 @@ namespace WebClothes.Areas.Admin.Controllers
                     order.WardId = model.WardId;
                 }
                 order.Date_Order = model.Date_Order;
-                order.CustomerId = model.CustomerId;
+                order.PaymentMethod = model.PaymentMethod;
+                order.CustomerId = model.CustomerProfileId;
                 order.Status = model.Status;
                 _orderUnitOfWork.SaleOrderRepo.Create(order);
+                var or = _orderUnitOfWork.SaleOrderRepo.SaleOrder(order);
+                var id = or.Id;
                 var result = new
                 {
                     success = true,
@@ -175,6 +193,70 @@ namespace WebClothes.Areas.Admin.Controllers
                 return Ok(result);
             }
             return RedirectToAction("Cre_Order");
+        }
+        [HttpGet]
+        public IActionResult Edit_Order(int id)
+        {
+            var mode = _orderUnitOfWork.SaleOrderRepo.GetSaleOrder(id);
+            var ct = _orderUnitOfWork.CustomerRepo.GetProfileById(mode.CustomerId);
+            var mod = new View_Order();
+            if (mode.Address == ct.Address)
+            {
+                mod.Address = mode.Address;
+            }
+            else
+            {
+                mod.Address = null;
+            }
+            mod.Id = id;
+            mod.WardId = mode.WardId;
+            mod.ProvinceId = mode.ProvinceId;
+            mod.DistrictId = mode.DistrictId;
+            mod.products = mode.products;
+            mod.PaymentMethod = mode.PaymentMethod;
+            mod.CustomerProfileId = mode.CustomerId;
+            mod.Status = mode.Status;
+            mod.Date_Order = mode.Date_Order;
+            return View(mod);
+        }
+        [HttpPost]
+        public IActionResult Edit_Order(View_Order model)
+        {
+            if (ModelState.IsValid)
+            {
+                var customer = _orderUnitOfWork.CustomerRepo.GetProfileById(model.CustomerProfileId);
+                var order = _orderUnitOfWork.SaleOrderRepo.GetSaleOrder(model.Id);
+                var prn = _orderUnitOfWork.ProvinceRepo.GetProvinceById(model.ProvinceId);
+                var disn = _orderUnitOfWork.districtRepo.GetDistrict(model.DistrictId);
+                var warn = _orderUnitOfWork.WardRepo.Get(model.WardId);
+                var address = prn.Name + ',' + disn.Name + ',' + warn.Name;
+                if (customer.Address == model.Address)
+                {
+                    order.Address = customer.Address;
+                    order.ProvinceId = customer.ProvinceId;
+                    order.DistrictId = customer.DistrictId;
+                    order.WardId = customer.WardId;
+                }
+                else
+                {
+                    order.Address = address;
+                    order.ProvinceId = model.ProvinceId;
+                    order.DistrictId = model.DistrictId;
+                    order.WardId = model.WardId;
+                }
+                order.Date_Order = model.Date_Order;
+                order.CustomerId = model.CustomerProfileId;
+                order.Status = model.Status;
+                order.PaymentMethod = model.PaymentMethod;
+                _orderUnitOfWork.SaleOrderRepo.Update(order);
+                var result = new
+                {
+                    success = true,
+                    redirectUrl = Url.Action("SaleOrder", "Order")
+                };
+                return Ok(result);
+            }
+            return RedirectToAction("Edit_Order");
         }
         public IActionResult Province()
         {
@@ -361,15 +443,21 @@ namespace WebClothes.Areas.Admin.Controllers
         }
         public IActionResult SaleOrderLine()
         {
-            var mode = _orderUnitOfWork.saleOrderLine.SaleOrders();
-            return View(mode);
+            var mod = _orderUnitOfWork.saleOrderLine.SaleOrders();
+            return View(mod);
         }
         [HttpPost]
-        public IActionResult Cre_SaleOrderLine(SaleOrderLine model)
+        public IActionResult Cre_SaleOrderLine(View_OrderLine model)
         {
             if (ModelState.IsValid)
             {
-                _orderUnitOfWork.saleOrderLine.CreateSaleOrderLine(model);
+                var n = new SaleOrderLine();
+                n.SaleOrderId = model.SaleOrderId;
+                n.ProductId = model.ProductId;
+                n.CustomerId = model.CustomerId;
+                n.Quantity = model.Quantity;
+                n.Variant = model.Variant;
+                _orderUnitOfWork.saleOrderLine.CreateSaleOrderLine(n);
                 var result = new
                 {
                     success = true,
@@ -377,7 +465,6 @@ namespace WebClothes.Areas.Admin.Controllers
                 };
                 return Ok(result);
             }
-
             return Ok();
         }
 
@@ -388,16 +475,22 @@ namespace WebClothes.Areas.Admin.Controllers
             var or = _orderUnitOfWork.SaleOrderRepo.SaleOrders();
             var pr = _proUnitOfWork.Product.GetProducts();
             ViewBag.ct = new SelectList(ct, "Id", "Name", null);
-            ViewBag.or = new SelectList(or, "Id", "Name", null);
+            ViewBag.or = new SelectList(or, "Id", "Id", null);
             ViewBag.pr = new SelectList(pr, "Id", "Name", null);
             return View();
         }
         [HttpPost]
-        public IActionResult Edit_SaleOrderLine(SaleOrderLine model)
+        public IActionResult Edit_SaleOrderLine(View_OrderLine model)
         {
             if (ModelState.IsValid)
             {
-                _orderUnitOfWork.saleOrderLine.UpdateSaleOrderLine(model);
+                var n = new SaleOrderLine();
+                n.SaleOrderId = model.SaleOrderId;
+                n.ProductId = model.ProductId;
+                n.CustomerId = model.CustomerId;
+                n.Quantity = model.Quantity;
+                n.Variant = model.Variant;
+                _orderUnitOfWork.saleOrderLine.UpdateSaleOrderLine(n);
                 return RedirectToAction("SaleOrderLine");
             }
 
@@ -408,14 +501,26 @@ namespace WebClothes.Areas.Admin.Controllers
         public IActionResult Edit_SaleOrderLine(int id)
         {
             var sale = _orderUnitOfWork.saleOrderLine.GetSaleOrderLine(id);
+            var s = new View_OrderLine();
+            s.Quantity = sale.Quantity;
+            s.Variant = sale.Variant;
+            s.SaleOrderId = sale.SaleOrderId;
+            s.ProductId = sale.ProductId;
+            s.CustomerId = sale.CustomerId;
             var ct = _orderUnitOfWork.CustomerRepo.GetProfiles();
             var or = _orderUnitOfWork.SaleOrderRepo.SaleOrders();
             var pr = _proUnitOfWork.Product.GetProducts();
             ViewBag.ct = new SelectList(ct, "Id", "Name", sale.CustomerId);
-            ViewBag.or = new SelectList(or, "Id", "Name", sale.OrderId);
+            ViewBag.or = new SelectList(or, "Id", "Id", sale.SaleOrderId);
             ViewBag.pr = new SelectList(pr, "Id", "Name", sale.ProductId);
-            return View();
+            return View(s);
         }
-
+        [HttpGet]
+        public IActionResult Delete_SaleOrderLine(int id)
+        {
+            var s = _orderUnitOfWork.saleOrderLine.GetSaleOrderLine(id);
+            _orderUnitOfWork.saleOrderLine.DeleteSaleOrderLine(s);
+            return RedirectToAction("SaleOrderLine");
+        }
     }
 }

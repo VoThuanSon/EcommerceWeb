@@ -7,6 +7,7 @@ using WebClothes.Data;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using WebClothes.Irepository;
 using WebClothes.Repository;
+using WebClothes.Services.Vnpay;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
@@ -14,20 +15,30 @@ builder.Services.AddHttpClient();
 builder.Services.AddDbContext<ShopContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddIdentity<IdentityUser,IdentityRole>()
-    .AddEntityFrameworkStores<ShopContext>();
+    .AddEntityFrameworkStores<ShopContext>()
+    .AddDefaultTokenProviders();
+builder.Services.AddAuthorization(options => 
+{ options.AddPolicy("RequireAdministratorRole", policy => policy.RequireRole("Admin")); 
+  options.AddPolicy("RequireUserRole", policy => policy.RequireRole("User")); });
 builder.Services.AddScoped<IProUnitOfWork, ProUnitOfWork>();
 builder.Services.AddScoped<IOrderUnitOfWork,OrderUnitOfWork>();
-
+builder.Services.AddScoped<IVnPayService,VnPayService>();
 var app = builder.Build();
-
 app.UseRouting();
 app.UseStaticFiles();
 app.UseAuthentication();
+app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapControllerRoute(
-    name: "areas",
-    pattern: "{area=Admin}/{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapControllerRoute(name: "default", pattern: "/{Area=User}/{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapAreaControllerRoute(
+        name: "Admin",
+        areaName: "Admin", 
+        pattern: "/Admin/{controller=Home}/{action=Index}/{id?}"); 
+    endpoints.MapAreaControllerRoute(
+        name: "User", 
+        areaName: "User", 
+        pattern: "/User/{controller=Home}/{action=Index}/{id?}");
 });
 app.Run();
 

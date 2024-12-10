@@ -1,4 +1,5 @@
-﻿using WebClothes.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WebClothes.Data;
 using WebClothes.Irepository;
 using WebClothes.Models;
 
@@ -11,6 +12,8 @@ namespace WebClothes.Repository
         {
             _shopContext = context;
         }
+
+
         public void CreateProfile(CustomerProfile profile)
         {
             _shopContext.CustomerProfiles.Add(profile);
@@ -23,10 +26,27 @@ namespace WebClothes.Repository
             _shopContext.SaveChanges();
         }
 
+        public int GetLastId()
+        {
+            var pro = _shopContext.CustomerProfiles.OrderBy(p => p.Id).LastOrDefault();
+            if (pro != null)
+            {
+                return pro.Id + 1;
+            }
+            return 1;
+
+        }
+
+        public CustomerProfile GetProfileByEmail(string email)
+        {
+            return _shopContext.CustomerProfiles.FirstOrDefault(p => p.Email == email);
+        }
+
         public CustomerProfile GetProfileById(int id)
         {
-            return _shopContext.CustomerProfiles.FirstOrDefault(p => p.Id == id);
+            return _shopContext.CustomerProfiles.FirstOrDefault(p => p.Id  == id);
         }
+
 
         public List<CustomerProfile> GetProfiles()
         {

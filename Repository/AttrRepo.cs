@@ -1,4 +1,5 @@
-﻿using WebClothes.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WebClothes.Data;
 using WebClothes.Irepository;
 using WebClothes.Models;
 
@@ -36,7 +37,19 @@ namespace WebClothes.Repository
 
         List<Attribute_Pro> IAttrRepo.GetAttribute()
         {
-           return _shopContext.Attributes.ToList();
+           var n = new List<Attribute_Pro>();
+
+           var attr = _shopContext.Attributes.ToList();
+            foreach(var i in attr)
+            {
+                var s = new Attribute_Pro();
+                s.DisplayType = i.DisplayType;
+                s.Id = i.Id;
+                s.Name = i.Name;
+                s.Values = _shopContext.Attribute_Values.Where(p => p.Attribute_Id == i.Id).ToList();
+                n.Add(s);   
+            }
+            return n;
         }
     }
 }

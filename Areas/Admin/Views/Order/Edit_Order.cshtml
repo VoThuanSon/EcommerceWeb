@@ -1,0 +1,238 @@
+﻿@model View_Order
+
+
+@{
+    ViewData["Title"] = "Edit_Order";
+}
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Danh mục</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Edit Order</h6>
+        </div>
+        <div>
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary d-inline-block">Edit</h6>
+                    <div class="float-right">
+                        <button type="submit" class="btn btn-success" id="click">Save</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Customer
+                                    </label>
+                                </div>
+                                <select id="customerProfileSelect" name="customerProfileSelect" class="form-control"> <option value="">-- Select a customer profile --</option> </select>
+                            </div>
+                            <div id="addressesContainer" style="margin-top: 20px; display: none;"> <div id="addressesRadioButtons"></div> </div>
+                        </div>
+                        <div class="col-12" id="row-province">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Province
+                                    </label>
+                                </div>
+                                <select id="provinceSelect" name="provinceSelect" class="form-control bg-light border-0 small"> <option value="">-- Select a province --</option> </select>
+                            </div>
+                        </div>
+                        <div class="col-6" id="row-district">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        District
+                                    </label>
+                                </div>
+                                <select id="districtSelect" name="districtSelect" class="form-control bg-light border-0 small" disabled> <option value="">-- Select a district --</option> </select>
+                            </div>
+                        </div>
+                        <div class="col-6" id="row-ward">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Ward
+                                    </label>
+                                </div>
+                                <select id="wardSelect" name="wardSelect" class="form-control bg-light border-0 small" disabled> <option value="">-- Select a ward --</option> </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Status
+                                    </label>
+                                </div>
+                                <input asp-for="Status" class="form-control bg-light border-0 small" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        Date_Order
+                                    </label>
+                                </div>
+                                <input asp-for="Date_Order" class="form-control bg-light border-0 small" />
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="input-group">
+                                <div class="input-group-append">
+                                    <label class="btn btn-primary disabled">
+                                        PaymentMethod
+                                    </label>
+                                </div>
+                                <input asp-for="PaymentMethod" class="form-control bg-light border-0 small" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Script {
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/api/Address',
+                type: 'GET',
+                success: function (data) {
+                    var provinceSelect = $('#provinceSelect');
+                    $.each(data, function (index, province) {
+                        provinceSelect.append($('<option>', { value: province.id, text: province.name }));
+                    });
+                },
+                error: function () { alert('Failed to fetch provinces.'); }
+            });
+            $('#provinceSelect').change(function () {
+                var provinceId = $(this).val();
+                if (provinceId) {
+                    $.ajax({
+                        url: '/api/Address/' + provinceId + '/districts',
+                        type: 'GET',
+                        success: function (data) {
+                            var districtSelect = $('#districtSelect');
+                            districtSelect.empty().append('<option value="">-- Select a district --</option>');
+                            $.each(data, function (index, district) { districtSelect.append($('<option>', { value: district.id, text: district.name })); });
+                            districtSelect.prop('disabled', false);
+                        },
+                        error: function () { alert('Failed to fetch districts.'); }
+                    });
+                } else {
+                    $('#districtSelect').prop('disabled', true).empty().append('<option value="">-- Select a district --</option>');
+                    $('#wardSelect').prop('disabled', true).empty().append('<option value="">-- Select a ward --</option>');
+                }
+            });
+            $('#districtSelect').change(function () {
+                var provinceId = $('#provinceSelect').val();
+                var districtId = $(this).val();
+                if (districtId) {
+                    $.ajax({
+                        url: '/api/Address/' + provinceId + '/districts/' + districtId + '/wards',
+                        type: 'GET',
+                        success: function (data) {
+                            var wardSelect = $('#wardSelect');
+                            wardSelect.empty().append('<option value="">-- Select a ward --</option>');
+                            $.each(data, function (index, ward) { wardSelect.append($('<option>', { value: ward.id, text: ward.name })); });
+                            wardSelect.prop('disabled', false);
+                        },
+                        error: function () { alert('Failed to fetch wards.'); }
+                    });
+                } else {
+                    $('#wardSelect').prop('disabled', true).empty().append('<option value="">-- Select a ward --</option>');
+                }
+            });
+            $.ajax({
+                url: '/Admin/Order/GetCustomerProfiles',
+                type: 'GET',
+                success: function (data) {
+                    var customerProfileSelect = $('#customerProfileSelect');
+                    $.each(data, function (index, profile) { customerProfileSelect.append($('<option>', { value: profile.id, text: profile.name,selected:@Model.CustomerProfileId }).data('address', profile.address)); });
+                    var selectedOption1 = $('#customerProfileSelect').find(':selected');
+                    var address1 = selectedOption1.data('address');
+                    if (address1) {
+                        $('#addressesRadioButtons').html(`<div> <input type="checkbox" name="address" id="address" value="${address1}" checked> <label for="address">${address1}</label> </div>`); $('#addressesContainer').show();
+                        document.getElementById('row-province').style.display = 'none';
+                        document.getElementById('row-district').style.display = 'none';
+                        document.getElementById('row-ward').style.display = 'none';
+                    }else{
+                        $('#addressesContainer').hide();
+                        document.getElementById('row-province').style.display = 'block';
+                        document.getElementById('row-district').style.display = 'block';
+                        document.getElementById('row-ward').style.display = 'block';
+                    }
+                },
+                error: function () { alert('Failed to fetch customer profiles.'); }
+            });
+           
+            $('#customerProfileSelect').change(function () {
+                var selectedOption = $(this).find(':selected');
+                var address = selectedOption.data('address');
+                if (address) {
+                    $('#addressesRadioButtons').html(`<div> <input type="checkbox" name="address" id="address" value="${address}"> <label for="address">${address}</label> </div>`); $('#addressesContainer').show();
+                }
+                else { $('#addressesContainer').hide(); }
+            });
+            $('#addressesRadioButtons').on('change', '#address', function () {
+                if ($('#address').is(":checked")) {
+                    document.getElementById('row-province').style.display = 'none';
+                    document.getElementById('row-district').style.display = 'none';
+                    document.getElementById('row-ward').style.display = 'none';
+                } else {
+                    document.getElementById('row-province').style.display = 'block';
+                    document.getElementById('row-district').style.display = 'block';
+                    document.getElementById('row-ward').style.display = 'block';
+                }
+            })
+            $('#click').on('click', function () {
+                var cusId = $('#customerProfileSelect').val();
+                var name = $('#Name').val();
+                var pay = $('#PaymentMethod').val();
+                var date = $('#Date_Order').val();
+                var status = $('#Status').val();
+                if (!$('#address').is(":checked")) {
+                    var address = "ok";
+                    var dis = Number($('#districtSelect').val());
+                    var provine = Number($('#provinceSelect').val());
+                    var war = Number($('#wardSelect').val());
+                } else {
+                    var address = $('#address').val();
+                    var dis = 1;
+                    var provine = 1;
+                    var war = 1;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '/Admin/Order/Edit_Order',
+                    data: { Id: @Model.Id,Name: name, Date_Order: date, ProvinceId: provine, DistrictId: dis, WardId: war, Address: address, Status: status, CustomerProfileId: cusId, products: "ok" ,PaymentMethod : pay},
+                    success: function (result) {
+                        if (result.success) {
+                            window.location.href = result.redirectUrl;
+                        } else {
+                            alert("Operation failed.");
+                        }
+                    },
+                    error: function (data) {
+                        alert("Đã có lỗi");
+                    }
+                })
+            })
+        })
+    </script>
+}
+
+
+

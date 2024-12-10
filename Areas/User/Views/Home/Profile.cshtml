@@ -1,0 +1,191 @@
+﻿@model ViewUserProfile
+
+<div class="container">
+    <div class="row gutters">
+        <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="account-settings">
+                        <div class="user-profile">
+                            <div class="user-avatar">
+                                @if (Model.Img != null)
+                                {
+                                    <img src="@Model.Img.Path" alt="Maxwell Admin">
+                                }
+                                else
+                                {
+                                    <img src="~/Images/img/user-avatar.jpg" class="avt" alt="Maxwell Admin">
+                                    <label class="btn btn-outline-info" for="file">Choose photo</label>
+                                    <input type="file" id="file" class="d-none" />
+                                }
+                            </div>
+                            <h5 class="user-name">@Model.CustomerProfile.Name</h5>
+                            <h6 class="user-email">@Model.CustomerProfile.Email</h6>
+                            <h6 class="user-email">@Model.CustomerProfile.DateofBirth</h6>
+                        </div>
+                        <div class="about">
+                            <h5>@Model.CustomerProfile.Phone</h5>
+                            <p>@Model.CustomerProfile.Address</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            @foreach (var i in Model.SaleOrders)
+                            {
+                                var total = 0.0;
+                                var discount = 0.0;
+                                <!-- Details -->
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="mb-3 d-flex justify-content-between">
+                                            <div>
+                                                <span class="me-3">@i.Date_Order</span>
+                                                <span class="me-3">@i.Id</span>
+                                                <span class="me-3">Visa -1234</span>
+                                                <span class="badge rounded-pill bg-info">SHIPPING</span>
+                                            </div>
+                                        </div>
+
+                                        <table class="table table-borderless">
+                                            <tbody>
+                                                @foreach (var line in i.Lines)
+                                                {
+
+                                                    <tr>
+                                                        <td>
+                                                            <div class="d-flex mb-2">
+                                                                <div class="flex-shrink-0">
+                                                                    <img src="@line.Product.Img" alt="" width="35" class="img-fluid">
+                                                                </div>
+                                                                <div class="flex-lg-grow-1 ms-3">
+                                                                    <h6 class="small mb-0"><a asp-action="TrackingOrder" asp-controller="Shop" class="text-reset">@line.Product.Name</a></h6>
+                                                                    <span class="small">@line.Variant</span>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>@line.Quantity</td>
+                                                        <td class="text-end">$@(line.Quantity * line.Product.Price)</td>
+                                                    </tr>
+                                                    total = total + @line.Quantity * @line.Product.Price;
+                                                    discount = Math.Round(discount + line.Product.Sale, 2);
+                                                }
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="2">Subtotal</td>
+                                                    <td class="text-end">$</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">Shipping</td>
+                                                    <td class="text-end">$20.00</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2">Discount (Code: NEWYEAR)</td>
+                                                    <td class="text-danger text-end">-$@discount</td>
+                                                </tr>
+                                                <tr class="fw-bold">
+                                                    <td colspan="2">TOTAL</td>
+                                                    <td class="text-end">$@(total * discount - 20)</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-lg-6">
+                                                <h3 class="h6">Payment Method</h3>
+                                                <p>
+                                                    @i.PaymentMethod
+                                                    @if (i.PaymentMethod == "VNPAY")
+                                                    {
+                                                        <form asp-action="CreatePaymentUrlVnpay" method="post" asp-controller="Payment">
+                                                            <input type="hidden" name="Name" value="@Model.CustomerProfile.Name"/>
+                                                            <input type="hidden" name="Amount" value="@(total * discount - 20)" />
+                                                            <input type="hidden" name="OrderDescription" value="Payment in SonOggy Store"/>
+                                                            <input type="hidden"  name="OrderType" value="other"/>
+                                                            <button class="badge bg-success rounded-pill" type="submit">PAID</button>
+                                                        </form>
+                                                    }
+                                                </p>
+                                            </div>
+                                            <div class="col-lg-6">
+                                                <h3 class="h6">Billing address</h3>
+                                                <address>
+                                                    <strong>@Model.CustomerProfile.Name</strong><br>
+                                                    @Model.CustomerProfile.Address<br>
+                                                    <abbr title="Phone">P:</abbr> @Model.CustomerProfile.Phone
+                                                </address>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <!-- Payment -->
+
+                        </div>
+                        <div class="col-lg-4">
+                            <!-- Customer Notes -->
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h3 class="h6">Customer Notes</h3>
+                                    <p>Sed enim, faucibus litora velit vestibulum habitasse. Cras lobortis cum sem aliquet mauris rutrum. Sollicitudin. Morbi, sem tellus vestibulum porttitor.</p>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <!-- Shipping information -->
+                                <div class="card-body">
+                                    <h3 class="h6">Shipping Information</h3>
+                                    <strong>FedEx</strong>
+                                    <span><a href="#" class="text-decoration-underline" target="_blank">FF1234567890</a> <i class="bi bi-box-arrow-up-right"></i> </span>
+                                    <hr>
+                                    <h3 class="h6">Address</h3>
+                                    <address>
+                                        <strong>John Doe</strong><br>
+                                        1355 Market St, Suite 900<br>
+                                        San Francisco, CA 94103<br>
+                                        <abbr title="Phone">P:</abbr> (123) 456-7890
+                                    </address>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Script {
+    <script>
+        $(document).ready(function () {
+            $('#file').change(function () {
+                var s = $('#file').val();
+                var fileName = s.replace("C:\\fakepath\\", "");
+                var path = "/Images/User/" + fileName;
+                var data = $('#file')[0].files[0]
+                var formData = new FormData();
+                formData.append("ufile", data);
+                formData.append("id", @Model.CustomerProfile.Id);
+                $.ajax({
+                    type: "POST",
+                    url: "/User/Home/UploadFile",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (result) {
+                        $('.avt').attr('src', path);
+                    }
+                })
+            })
+        })
+    </script>
+
+}

@@ -18,7 +18,9 @@
                             <th>Id</th>
                             <th>CustomerId</th>
                             <th>DateOrder</th>
+                            <th>Status</th>
                             <th>Address</th>
+                            <th>PaymentMethod</th>
                             <th>ListPro</th>
                             <th>Action</th>
                             <th>Action</th>
@@ -31,8 +33,15 @@
                                 <td>@i.Id</td>
                                 <td>@i.CustomerId</td>
                                 <td>@i.Date_Order</td>
+                                <th>@i.Status</th>
                                 <td>@i.Address</td>
-                                <td>@i.products</td>
+                                <td>@i.PaymentMethod</td>
+                                <td>
+                                    @foreach(var ii in i.products)
+                                    {
+                                        <img src="@ii.Img" style="width:50px;height:50px" />
+                                    }
+                                </td>
                                 <td><a asp-action="Edit_Order" asp-route-id="@i.Id"><i class="bi bi-eraser-fill text-warning"></i></a></td>
                                 <td><a asp-action="Delete_Order" asp-route-id="@i.Id"><i class="bi bi-trash2-fill text-danger"></i></a></td>
                             </tr>

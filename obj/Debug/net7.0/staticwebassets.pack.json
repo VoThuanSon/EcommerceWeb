@@ -7493,6 +7493,22 @@
       "PackagePath": "staticwebassets\\Admin\\vendor\\jquery\\jquery.slim.min.map"
     },
     {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\AK-125-D.jpg",
+      "PackagePath": "staticwebassets\\Images\\AK-125-D.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\AK-125-T.jpg",
+      "PackagePath": "staticwebassets\\Images\\AK-125-T.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\AK-125.jpg",
+      "PackagePath": "staticwebassets\\Images\\AK-125.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\User\\NTN_8654.jpg",
+      "PackagePath": "staticwebassets\\Images\\User\\NTN_8654.jpg"
+    },
+    {
       "Id": "D:\\WebClothes\\wwwroot\\Images\\ao-thun-dino.jpg",
       "PackagePath": "staticwebassets\\Images\\ao-thun-dino.jpg"
     },
@@ -7503,6 +7519,18 @@
     {
       "Id": "D:\\WebClothes\\wwwroot\\Images\\ap-054-t.jpg",
       "PackagePath": "staticwebassets\\Images\\ap-054-t.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\hd098-k.jpg",
+      "PackagePath": "staticwebassets\\Images\\hd098-k.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\hd098-x.jpg",
+      "PackagePath": "staticwebassets\\Images\\hd098-x.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\hd098.jpg",
+      "PackagePath": "staticwebassets\\Images\\hd098.jpg"
     },
     {
       "Id": "D:\\WebClothes\\wwwroot\\Images\\img\\carouserl-1.jpg",
@@ -7517,8 +7545,28 @@
       "PackagePath": "staticwebassets\\Images\\img\\carouserl-3.jpg"
     },
     {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\img\\user-avatar.jpg",
+      "PackagePath": "staticwebassets\\Images\\img\\user-avatar.jpg"
+    },
+    {
       "Id": "D:\\WebClothes\\wwwroot\\Images\\polo-ap054.jpg",
       "PackagePath": "staticwebassets\\Images\\polo-ap054.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\ps083-b.jpg",
+      "PackagePath": "staticwebassets\\Images\\ps083-b.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\ps083-d.jpg",
+      "PackagePath": "staticwebassets\\Images\\ps083-d.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\ps083-x.jpg",
+      "PackagePath": "staticwebassets\\Images\\ps083-x.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\ps083.jpg",
+      "PackagePath": "staticwebassets\\Images\\ps083.jpg"
     },
     {
       "Id": "D:\\WebClothes\\wwwroot\\Images\\quan-pre-d.jpg",
@@ -7553,6 +7601,10 @@
       "PackagePath": "staticwebassets\\Images\\striper-s.jpg"
     },
     {
+      "Id": "D:\\WebClothes\\wwwroot\\Images\\striper-t.jpg",
+      "PackagePath": "staticwebassets\\Images\\striper-t.jpg"
+    },
+    {
       "Id": "D:\\WebClothes\\wwwroot\\Images\\trang-kem-dino.jpg",
       "PackagePath": "staticwebassets\\Images\\trang-kem-dino.jpg"
     },
@@ -7563,6 +7615,10 @@
     {
       "Id": "D:\\WebClothes\\wwwroot\\Images\\xam-tieu-dino.jpg",
       "PackagePath": "staticwebassets\\Images\\xam-tieu-dino.jpg"
+    },
+    {
+      "Id": "D:\\WebClothes\\wwwroot\\User\\css\\site.css",
+      "PackagePath": "staticwebassets\\User\\css\\site.css"
     },
     {
       "Id": "D:\\WebClothes\\wwwroot\\User\\css\\styles.css",
